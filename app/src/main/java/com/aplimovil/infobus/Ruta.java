@@ -40,5 +40,4 @@ public class Ruta extends AppCompatActivity {
             }
         });
     }
-
 }
