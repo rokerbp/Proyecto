@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">InfoBus</string>
+    <string name="origen">Origen</string>
+    <string name="destino">Destino</string>
+    <string name="consultar">Consultar</string>
+</resources>
