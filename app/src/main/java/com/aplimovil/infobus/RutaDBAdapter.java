@@ -14,8 +14,9 @@ public class RutaDBAdapter {
     private static final String DATABASE_TABLE = "infoRuta";
     private static final int DATABASE_VERSION = 1;
     public static final String KEY_ID = "_id";
-    public static final String KEY_TASK = "task";
-    public static final String KEY_CREATION_DATE = "creation_date";|
+    public static final String KEY_EMPRESA = "empresa";
+    public static final String KEY_NUMERO = "ruta";
+    public static final String KEY_CREATION_DATE = "creation_date";
     private SQLiteDatabase db;
     private final Context context;
     public RutaDBAdapter(Context _context) {
