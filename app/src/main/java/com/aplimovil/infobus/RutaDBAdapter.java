@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Date;
+
 public class RutaDBAdapter {
     private static final String DATABASE_NAME = "infoBus.db";
     private static final String DATABASE_TABLE = "infoRuta";
@@ -41,51 +43,51 @@ public class RutaDBAdapter {
     // Insert a new route
     public long insertRoute(RutaItem _route) {
         // Create a new row of values to insert.
-        ContentValues newTaskValues = new ContentValues();
+        ContentValues newRouteValues = new ContentValues();
         // Assign values for each row.
-        newTaskValues.put(KEY_TASK, _task.getTask());
-        newTaskValues.put(KEY_CREATION_DATE, _task.getCreated().getTime());
+        newRouteValues.put(KEY_NUMERO, _route.getRoute());
+        newRouteValues.put(KEY_CREATION_DATE, _route.getCreated().getTime());
         // Insert the row.
-        return db.insert(DATABASE_TABLE, null, newTaskValues);
+        return db.insert(DATABASE_TABLE, null, newRouteValues);
     }
-    // Remove a task based on its index
-    public boolean removeTask(long _rowIndex) {
+    // Remove a route based on its index
+    public boolean removeRoute(long _rowIndex) {
         return db.delete(DATABASE_TABLE, KEY_ID + "=" + _rowIndex, null) > 0;
     }
-    // Update a task
-    public boolean updateTask(long _rowIndex, String _task) {
+    // Update a Route
+    public boolean updateRoute(long _rowIndex, String _route) {
         ContentValues newValue = new ContentValues();
-        newValue.put(KEY_TASK, _task);
+        newValue.put(KEY_NUMERO, _route);
         return db.update(DATABASE_TABLE, newValue, KEY_ID + "=" + _rowIndex, null) > 0;
     }
 
-    //Read a Task All
-    public Cursor getAllToDoItemsCursor() {
-        return db.query(DATABASE_TABLE, new String[] { KEY_ID, KEY_TASK,
+    //Read a Route All
+    public Cursor getAllRutaItemsCursor() {
+        return db.query(DATABASE_TABLE, new String[] { KEY_ID, KEY_NUMERO,
                 KEY_CREATION_DATE }, null, null, null, null, null);
     }
-    public Cursor setCursorToToDoItem(long _rowIndex) throws SQLException {
+    public Cursor setCursorRutaItem(long _rowIndex) throws SQLException {
         Cursor result = db.query(true, DATABASE_TABLE, new String[] { KEY_ID,
-                        KEY_TASK }, KEY_ID + "=" + _rowIndex, null, null, null, null,
+                        KEY_NUMERO }, KEY_ID + "=" + _rowIndex, null, null, null, null,
                 null);
         if ((result.getCount() == 0) || !result.moveToFirst()) {
-            throw new SQLException("No to do items found for row: " + _rowIndex);
+            throw new SQLException("No to do routes found for row: " + _rowIndex);
         }
         return result;
     }
 
     //Read a Task single
-    public ToDoItem getToDoItem(long _rowIndex) throws SQLException {
+    public RutaItem getRutaItem(long _rowIndex) throws SQLException {
         Cursor cursor = db.query(true, DATABASE_TABLE, new String[] { KEY_ID,
-                        KEY_TASK }, KEY_ID + "=" + _rowIndex, null, null, null, null,
+                        KEY_NUMERO }, KEY_ID + "=" + _rowIndex, null, null, null, null,
                 null);
         if ((cursor.getCount() == 0) || !cursor.moveToFirst()) {
-            throw new SQLException("No to do item found for row: " + _rowIndex);
+            throw new SQLException("No route found for row: " + _rowIndex);
         }
-        String task = cursor.getString(cursor.getColumnIndex(KEY_TASK));
+        String route = cursor.getString(cursor.getColumnIndex(KEY_NUMERO));
         long created =
                 cursor.getLong(cursor.getColumnIndex(KEY_CREATION_DATE));
-        ToDoItem result = new ToDoItem(task, new Date(created));
+        RutaItem result = new RutaItem(route, new Date(created));
         return result;
     }
     //end
