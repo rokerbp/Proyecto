@@ -16,12 +16,81 @@ public class RutaDBAdapter {
     public static final String KEY_ID = "_id";
     public static final String KEY_EMPRESA = "empresa";
     public static final String KEY_NUMERO = "ruta";
+    public static final String KEY_POE = "tiempo";
     public static final String KEY_CREATION_DATE = "creation_date";
+
     private SQLiteDatabase db;
     private final Context context;
+    private RutaDBOpenHelper dbHelper;
+
     public RutaDBAdapter(Context _context) {
         this.context = _context;
+        dbHelper = new RutaDBOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+    public void close() { db.close();}
+    public void open() throws SQLiteException {
+        try {
+            db = dbHelper.getWritableDatabase();
+        } catch (SQLiteException ex) {
+            db = dbHelper.getReadableDatabase();
+        }
+    }
+
+    // begin ************************
+    // Insert a new route
+    public long insertRoute(RutaItem _route) {
+        // Create a new row of values to insert.
+        ContentValues newTaskValues = new ContentValues();
+        // Assign values for each row.
+        newTaskValues.put(KEY_TASK, _task.getTask());
+        newTaskValues.put(KEY_CREATION_DATE, _task.getCreated().getTime());
+        // Insert the row.
+        return db.insert(DATABASE_TABLE, null, newTaskValues);
+    }
+    // Remove a task based on its index
+    public boolean removeTask(long _rowIndex) {
+        return db.delete(DATABASE_TABLE, KEY_ID + "=" + _rowIndex, null) > 0;
+    }
+    // Update a task
+    public boolean updateTask(long _rowIndex, String _task) {
+        ContentValues newValue = new ContentValues();
+        newValue.put(KEY_TASK, _task);
+        return db.update(DATABASE_TABLE, newValue, KEY_ID + "=" + _rowIndex, null) > 0;
+    }
+
+    //Read a Task All
+    public Cursor getAllToDoItemsCursor() {
+        return db.query(DATABASE_TABLE, new String[] { KEY_ID, KEY_TASK,
+                KEY_CREATION_DATE }, null, null, null, null, null);
+    }
+    public Cursor setCursorToToDoItem(long _rowIndex) throws SQLException {
+        Cursor result = db.query(true, DATABASE_TABLE, new String[] { KEY_ID,
+                        KEY_TASK }, KEY_ID + "=" + _rowIndex, null, null, null, null,
+                null);
+        if ((result.getCount() == 0) || !result.moveToFirst()) {
+            throw new SQLException("No to do items found for row: " + _rowIndex);
+        }
+        return result;
+    }
+
+    //Read a Task single
+    public ToDoItem getToDoItem(long _rowIndex) throws SQLException {
+        Cursor cursor = db.query(true, DATABASE_TABLE, new String[] { KEY_ID,
+                        KEY_TASK }, KEY_ID + "=" + _rowIndex, null, null, null, null,
+                null);
+        if ((cursor.getCount() == 0) || !cursor.moveToFirst()) {
+            throw new SQLException("No to do item found for row: " + _rowIndex);
+        }
+        String task = cursor.getString(cursor.getColumnIndex(KEY_TASK));
+        long created =
+                cursor.getLong(cursor.getColumnIndex(KEY_CREATION_DATE));
+        ToDoItem result = new ToDoItem(task, new Date(created));
+        return result;
+    }
+    //end
+
+    // ***************************
 
     private static class RutaDBOpenHelper extends SQLiteOpenHelper {
         public RutaDBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -31,7 +100,7 @@ public class RutaDBAdapter {
         private static final String DATABASE_CREATE = "create table "
                 + DATABASE_TABLE + " (" + KEY_ID
                 + " integer primary key autoincrement, " + KEY_EMPRESA
-                + " text not null, " + KEY_CREATION_DATE + " long);";
+                + " text not null, " + KEY_POE + "long," + KEY_CREATION_DATE + " long);";
         @Override
         public void onCreate(SQLiteDatabase _db) {
             _db.execSQL(DATABASE_CREATE);
