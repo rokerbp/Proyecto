@@ -17,8 +17,12 @@ public class RutaDBAdapter {
     private static final int DATABASE_VERSION = 1;
     public static final String KEY_ID = "_id";
     public static final String KEY_EMPRESA = "empresa";
-    public static final String KEY_NUMERO = "ruta";
-    public static final String KEY_POE = "tiempo";
+    //public static final String KEY_NUMERO = "ruta";
+    public static final String KEY_NUMERO = "numero";
+    public static final String KEY_TIEMPO = "tiempo";
+    public static final String KEY_LUGARES = "lugares";
+    // agregar ruta pero de array
+    // public static final String KEY_POE = "tiempo";
     public static final String KEY_CREATION_DATE = "creation_date";
 
     private SQLiteDatabase db;
@@ -46,6 +50,9 @@ public class RutaDBAdapter {
         ContentValues newRouteValues = new ContentValues();
         // Assign values for each row.
         newRouteValues.put(KEY_NUMERO, _route.getRoute());
+        newRouteValues.put(KEY_EMPRESA, _route.getCompany());
+        newRouteValues.put(KEY_TIEMPO, _route.getTme());
+        newRouteValues.put(KEY_LUGARES, _route.getPlaces());
         newRouteValues.put(KEY_CREATION_DATE, _route.getCreated().getTime());
         // Insert the row.
         return db.insert(DATABASE_TABLE, null, newRouteValues);
@@ -79,15 +86,17 @@ public class RutaDBAdapter {
     //Read a Task single
     public RutaItem getRutaItem(long _rowIndex) throws SQLException {
         Cursor cursor = db.query(true, DATABASE_TABLE, new String[] { KEY_ID,
-                        KEY_NUMERO }, KEY_ID + "=" + _rowIndex, null, null, null, null,
+                        KEY_NUMERO, KEY_EMPRESA, KEY_LUGARES, KEY_TIEMPO }, KEY_ID + "=" + _rowIndex, null, null, null, null,
                 null);
         if ((cursor.getCount() == 0) || !cursor.moveToFirst()) {
             throw new SQLException("No route found for row: " + _rowIndex);
         }
         String route = cursor.getString(cursor.getColumnIndex(KEY_NUMERO));
-        long created =
-                cursor.getLong(cursor.getColumnIndex(KEY_CREATION_DATE));
-        RutaItem result = new RutaItem(route, new Date(created));
+        String company = cursor.getString(cursor.getColumnIndex(KEY_EMPRESA));
+        String places = cursor.getString(cursor.getColumnIndex(KEY_LUGARES));
+        String tme = cursor.getString(cursor.getColumnIndex(KEY_TIEMPO));
+        long created = cursor.getLong(cursor.getColumnIndex(KEY_CREATION_DATE));
+        RutaItem result = new RutaItem(route, company, places, tme, new Date(created));
         return result;
     }
     //end
@@ -100,9 +109,13 @@ public class RutaDBAdapter {
         }
         // SQL Statement to create a new database.
         private static final String DATABASE_CREATE = "create table "
-                + DATABASE_TABLE + " (" + KEY_ID
-                + " integer primary key autoincrement, " + KEY_EMPRESA
-                + " text not null, " + KEY_POE + "long," + KEY_CREATION_DATE + " long);";
+                + DATABASE_TABLE + " ("
+                + KEY_ID + " integer primary key autoincrement, "
+                + KEY_EMPRESA + " text not null, "
+                + KEY_LUGARES + "text not null"
+                + KEY_NUMERO + "text not null"
+                + KEY_TIEMPO + "text not null"
+                + KEY_CREATION_DATE + " long);";
         @Override
         public void onCreate(SQLiteDatabase _db) {
             _db.execSQL(DATABASE_CREATE);
@@ -110,7 +123,7 @@ public class RutaDBAdapter {
         @Override
         public void onUpgrade(SQLiteDatabase _db, int _oldVersion,
                               int _newVersion) {
-            Log.w("TaskDBAdapter", "Upgrading from version " + _oldVersion
+            Log.w("RouteDBAdapter", "Upgrading from version " + _oldVersion
                     + " to " + _newVersion
                     + ", which will destroy all old data");
             // Drop the old table.
