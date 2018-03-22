@@ -47,4 +47,11 @@
         android:inputType="textPersonName"
         android:text="Resultado" />
 
+    <Button
+        android:id="@+id/favorito"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FAVORITO"
+        android:layout_gravity="center"/>
+
 </LinearLayout>

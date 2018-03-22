@@ -15,6 +15,7 @@ public class Ruta extends AppCompatActivity {
     private Spinner midestino;
     private String[] rutas;
     private EditText mitexto;
+    private Button mifavorito;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class Ruta extends AppCompatActivity {
         midestino = (Spinner) findViewById(R.id.destino);
         miconsulta = (Button) findViewById(R.id.consultar);
         mitexto = (EditText) findViewById(R.id.example);
+        mifavorito = (Button) findViewById(R.id.favorito);
         //Llenamos los Spinner con informacion
         String[] nombres = new String[]{"campanario", "Bellohorizonte", "Comuneros", "Ortigal", "Campamento", "Estancia"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,nombres);
@@ -39,5 +41,14 @@ public class Ruta extends AppCompatActivity {
                 mitexto.setText("Su Origen: "+so+",Su Destino: "+sd);
             }
         });
+        mifavorito.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v) {
+                RutItem newRut = new RutItem(miorigen.getSelectedItem().toString());
+
+
+            }
+        });
+
     }
 }
